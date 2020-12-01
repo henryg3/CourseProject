@@ -150,6 +150,7 @@ function getViewerConfiguration() {
       print: document.getElementById("print"),
       presentationModeButton: document.getElementById("presentationMode"),
       download: document.getElementById("download"),
+      bulkdownload : document.getElementById("bulkdownload"),
       viewBookmark: document.getElementById("viewBookmark")
     },
     secondaryToolbar: {
@@ -927,7 +928,10 @@ const PDFViewerApplication = {
     }
 
     const url = this.baseUrl;
+    // console.log(url);
     const filename = this.contentDispositionFilename || (0, _ui_utils.getPDFFileNameFromURL)(this.url);
+    // console.log(filename);
+
     const downloadManager = this.downloadManager;
 
     downloadManager.onerror = err => {
@@ -945,6 +949,92 @@ const PDFViewerApplication = {
       });
       downloadManager.download(blob, url, filename);
     }).catch(downloadByUrl);
+  },
+  download_(url, filename)
+  {
+    function downloadByUrl() {
+      downloadManager.downloadUrl(url, filename);
+    }
+    const downloadManager = this.downloadManager;
+
+    downloadManager.onerror = err => {
+      this.error(`PDF failed to download: ${err}`);
+    };
+
+    if (!this.pdfDocument || !this.downloadComplete) {
+      downloadByUrl();
+      return;
+    }
+
+    this.pdfDocument.getData().then(function (data) {
+      const blob = new Blob([data], {
+        type: "application/pdf"
+      });
+      downloadManager.download(blob, url, filename);
+    }).catch(downloadByUrl);
+  },
+  bulkdownload()
+  {
+    function downloadByUrl() {
+      downloadManager.downloadUrl(url, filename);
+    }
+    // var downloadManager = ;
+    var urls = [];
+    var filename = [];
+    for(let i = 0; i < 20; i++)
+    {
+      urls.push(this.url.replace(/slide[\d]{1,}\.pdf/, "slide"+i+".pdf"));
+      filename.push((this.contentDispositionFilename || (0, _ui_utils.getPDFFileNameFromURL)(this.url)).replace(/slide[\d]{1,}\.pdf/, "slide"+i+".pdf"));
+    }
+    var link = document.createElement('a');
+
+    link.setAttribute('download', null);
+    link.style.display = 'none';
+
+    document.body.appendChild(link);
+
+    
+    for (var i = 0; i < urls.length; i++) {
+        // sleep(1000);
+        link.setAttribute('download',filename);
+        link.setAttribute('href', urls[i]);
+        link.click(); 
+    }
+
+    document.body.removeChild(link);
+      // const dirname = "";
+      // this.download_(url, filename);
+      // var a = document.createElement("a");
+      // if (!a.click) {
+      //   throw new Error('DownloadManager: "a.click()" is not supported.');
+      // }
+      // a.href = url;
+      // a.target = "_parent";
+      // // Use a.download if available. This increases the likelihood that
+      // // the file is downloaded instead of opened by another PDF plugin.
+      // if ("download" in a) {
+      //   a.download = filename;
+      // }
+      // // console.log(filename);
+      // // <a> must be in the document for IE and recent Firefox versions,
+      // // otherwise .click() is ignored.
+      // (document.body || document.documentElement).appendChild(a);
+      // a.click();
+      // a.remove();
+      // if (!this.pdfDocument || !this.downloadComplete) {
+      //   downloadByUrl();
+      //   return;
+      // }
+      // this.downloadManager.downloadUrl(url, filename);
+      // // console.log(this.downloadManager.);
+      // // console.log();
+      // // this.pdfDocument.getData().then(function (data) {
+      // //   const blob = new Blob([data], {
+      // //     type: "application/pdf"
+      // //   });
+      // //   downloadManager.download(blob, url, filename);
+      // // }).catch(downloadByUrl);
+  
   },
 
   fallback(featureId) {
@@ -1572,6 +1662,8 @@ const PDFViewerApplication = {
 
     eventBus._on("download", webViewerDownload);
 
+    eventBus._on("bulkdownload", webViewerBulkDownload);
+
     eventBus._on("firstpage", webViewerFirstPage);
 
     eventBus._on("lastpage", webViewerLastPage);
@@ -1697,6 +1789,8 @@ const PDFViewerApplication = {
     eventBus._off("print", webViewerPrint);
 
     eventBus._off("download", webViewerDownload);
+    
+    eventBus._off("bulkdownload", webViewerBulkDownload);
 
     eventBus._off("firstpage", webViewerFirstPage);
 
@@ -2166,6 +2260,7 @@ let webViewerFileInputChange, webViewerOpenFile;
     appConfig.toolbar.viewBookmark.setAttribute("hidden", "true");
     appConfig.secondaryToolbar.viewBookmarkButton.setAttribute("hidden", "true");
     appConfig.toolbar.download.setAttribute("hidden", "true");
+    // appConfig.toolbar.bulkdownload.setAttribute("hidden", "true");
     appConfig.secondaryToolbar.downloadButton.setAttribute("hidden", "true");
   };
 
@@ -2185,6 +2280,14 @@ function webViewerPrint() {
 
 function webViewerDownload() {
   PDFViewerApplication.download();
+}
+
+function webViewerBulkDownload()
+{
+  // alert("bulk");
+  // console.log("bulk");
+  PDFViewerApplication.bulkdownload();
+
 }
 
 function webViewerFirstPage() {
@@ -11449,7 +11552,12 @@ class Toolbar {
     }, {
       element: options.download,
       eventName: "download"
-    }, {
+    }, 
+    {
+      element: options.bulkdownload,
+      eventName: "bulkdownload"
+    } ,
+    {
       element: options.viewBookmark,
       eventName: null
     }];
@@ -12016,6 +12124,7 @@ class DownloadManager {
     if (!(0, _pdfjsLib.createValidAbsoluteUrl)(url, "http://example.com")) {
       return;
     }
+    console.log(filename);
 
     download(url + "#pdfjs.action=download", filename);
   }
@@ -12040,12 +12149,12 @@ class DownloadManager {
 
       return;
     }
-
+    
     if (this.disableCreateObjectURL) {
       this.downloadUrl(url, filename);
       return;
     }
-
+    // console.log("1111");
     const blobUrl = URL.createObjectURL(blob);
     download(blobUrl, filename);
   }

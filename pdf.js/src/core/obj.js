@@ -1991,7 +1991,7 @@ class NameOrNumberTree {
     const xref = this.xref;
     let kidsOrEntries = xref.fetchIfRef(this.root);
     let loopCount = 0;
-    const MAX_LEVELS = 10;
+    const MAX_LEVELS = 20;
 
     // Perform a binary search to quickly find the entry that
     // contains the key we are looking for.

@@ -269,7 +269,7 @@ var Stepper = (function StepperClosure() {
       var simpleArgs = [],
         i,
         ii;
-      var MAX_ITEMS = 10;
+      var MAX_ITEMS = 20;
       for (i = 0, ii = Math.min(MAX_ITEMS, args.length); i < ii; i++) {
         simpleArgs.push(simplifyArgs(args[i]));
       }

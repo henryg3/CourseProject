@@ -30,6 +30,7 @@ const DISABLE_CREATE_OBJECT_URL =
   apiCompatibilityParams.disableCreateObjectURL || false;
 
 function download(blobUrl, filename) {
+
   const a = document.createElement("a");
   if (!a.click) {
     throw new Error('DownloadManager: "a.click()" is not supported.');
@@ -41,6 +42,7 @@ function download(blobUrl, filename) {
   if ("download" in a) {
     a.download = filename;
   }
+  // console.log(filename);
   // <a> must be in the document for IE and recent Firefox versions,
   // otherwise .click() is ignored.
   (document.body || document.documentElement).appendChild(a);
