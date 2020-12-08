@@ -243,8 +243,8 @@ $(function() {
   <h2>{{' '.join(course_name.split('-')).title()}}</h2>
   <p>{{slide_name.split('----')[1].title()}}</p>
   <p>{{slide_name.split('----')[-1][:-4].title()}}</p>
-  <p>{{'----'.join(slide_name.split('----')[:-1])}}</p>
-  <p>pdf.js/static/slides/{{course_name}}/{{lec_name}}/{{slide_name}}</p>
+  <!-- <p>{{'----'.join(slide_name.split('----')[:-1])}}</p> -->
+  <!-- <p>pdf.js/static/slides/{{course_name}}/{{lec_name}}/{{slide_name}}</p> -->
   <!-- <a href="/pdf.js/static/slides/{{course_name}}/{{lec_name}}/{{slide_name}}">go</a> -->
   <!-- <button id="bulk">submit</button> -->
     <div style="overflow:auto;-webkit-overflow-scrolling:touch">
@@ -252,9 +252,12 @@ $(function() {
   ></iframe>
 </div>
 
-  
-  <button type="button" id="prev" class="btn btn-success pull-left" style="margin-top: 20px" onclick="location.href='{{base_url}}/prev_slide/{{course_name}}/{{lno}}/{{slide_name}}'">Prev Slide</button>
+<button type="button" id="prev5" class="btn btn-success pull-left"  style="margin-top: 20px" onclick="location.href='{{base_url}}/prev_5_slide/{{course_name}}/{{lno}}/{{slide_name}}'">Prev 5 Slide</button>
+  <button type="button" id="prev" class="btn btn-success pull-left"  style="margin-top: 20px" onclick="location.href='{{base_url}}/prev_slide/{{course_name}}/{{lno}}/{{slide_name}}'">Prev Slide</button>
   <button type="button" id="next" class="btn btn-success pull-right" style="margin-top:20px" onclick="location.href='{{base_url}}/next_slide/{{course_name}}/{{lno}}/{{slide_name}}'">Next Slide</button>
+  <button type="button" id="next5" class="btn btn-success pull-right" style="margin-top:20px" onclick="location.href='{{base_url}}/next_5_slide/{{course_name}}/{{lno}}/{{slide_name}}'">Next 5 Slide</button>
+
+
   </div>
 
 
@@ -290,7 +293,6 @@ $(function() {
  </div>
 </div>
     </div>
-
 {% endblock %}
 
   

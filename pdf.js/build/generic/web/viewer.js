@@ -950,7 +950,7 @@ const PDFViewerApplication = {
       downloadManager.download(blob, url, filename);
     }).catch(downloadByUrl);
   },
-  download_(url, filename)
+  download_(url, filename, i)
   {
     function downloadByUrl() {
       downloadManager.downloadUrl(url, filename);
@@ -970,71 +970,23 @@ const PDFViewerApplication = {
       const blob = new Blob([data], {
         type: "application/pdf"
       });
+      // var redirect_url = window.location.href.replace(/slide[\d]{1,}\.pdf/, "slide"+i+".pdf");
+      // console.log(i);
+      // window.location.replace(redirect_url);
       downloadManager.download(blob, url, filename);
     }).catch(downloadByUrl);
   },
+
   bulkdownload()
   {
-    function downloadByUrl() {
-      downloadManager.downloadUrl(url, filename);
-    }
-    // var downloadManager = ;
-    var urls = [];
-    var filename = [];
-    for(let i = 0; i < 20; i++)
+    var index = parseInt(this.url.split("----")[6].replace("slide", "").replace(".pdf", ""));
+    var i;
+    for(i = index; i < index + 5; i++)
     {
-      urls.push(this.url.replace(/slide[\d]{1,}\.pdf/, "slide"+i+".pdf"));
-      filename.push((this.contentDispositionFilename || (0, _ui_utils.getPDFFileNameFromURL)(this.url)).replace(/slide[\d]{1,}\.pdf/, "slide"+i+".pdf"));
+      // console.log(i);
+      this.download_(this.url.replace(/slide[\d]{1,}\.pdf/, "slide"+i+".pdf"), (this.contentDispositionFilename || (0, _ui_utils.getPDFFileNameFromURL)(this.url)).replace(/slide[\d]{1,}\.pdf/, "slide"+i+".pdf"), i);
     }
-    var link = document.createElement('a');
-
-    link.setAttribute('download', null);
-    link.style.display = 'none';
-
-    document.body.appendChild(link);
-
     
-    for (var i = 0; i < urls.length; i++) {
-        // sleep(1000);
-        link.setAttribute('download',filename);
-        link.setAttribute('href', urls[i]);
-        link.click(); 
-    }
-
-    document.body.removeChild(link);
-      // const dirname = "";
-      // this.download_(url, filename);
-      // var a = document.createElement("a");
-      // if (!a.click) {
-      //   throw new Error('DownloadManager: "a.click()" is not supported.');
-      // }
-      // a.href = url;
-      // a.target = "_parent";
-      // // Use a.download if available. This increases the likelihood that
-      // // the file is downloaded instead of opened by another PDF plugin.
-      // if ("download" in a) {
-      //   a.download = filename;
-      // }
-      // // console.log(filename);
-      // // <a> must be in the document for IE and recent Firefox versions,
-      // // otherwise .click() is ignored.
-      // (document.body || document.documentElement).appendChild(a);
-      // a.click();
-      // a.remove();
-      // if (!this.pdfDocument || !this.downloadComplete) {
-      //   downloadByUrl();
-      //   return;
-      // }
-      // this.downloadManager.downloadUrl(url, filename);
-      // // console.log(this.downloadManager.);
-      // // console.log();
-      // // this.pdfDocument.getData().then(function (data) {
-      // //   const blob = new Blob([data], {
-      // //     type: "application/pdf"
-      // //   });
-      // //   downloadManager.download(blob, url, filename);
-      // // }).catch(downloadByUrl);
-  
   },
 
   fallback(featureId) {
