@@ -1,5 +1,5 @@
 import os
-import re 
+import re
 import io
 import numpy as np
 import pickle
@@ -45,7 +45,7 @@ es = Elasticsearch()
 def log(ip,to_slide,action,start_time):
     with open(log_path,'a+') as f:
         f.write('{},{},{},{}\n'.format(ip,to_slide,action,start_time))
-        
+
 def get_snippet_sentences(slide_name, matching_keywords):
     idx = slide_names.index(slide_name)
     content = ss_corpus[idx].split(' ')
@@ -54,7 +54,7 @@ def get_snippet_sentences(slide_name, matching_keywords):
         if content[c] in matching_keywords:
             for i in range(max(0,c-2), min(c+3,len(content))):
                 include[i] = 1
-    text = '' 
+    text = ''
     for c in range(len(content)):
         if include[c]== 1:
             if c!=0 and include[c-1] == 0:
@@ -66,15 +66,15 @@ def get_snippet_sentences(slide_name, matching_keywords):
 def trim_name(slide_name):
     name = slide_name.split(' ')
     new_name = []
-    
+
     for i,n in enumerate(name):
         if (len(re.findall('[0-9\.]+', n)) != 0 and i>0 and name[i-1].lower()=='part') or (len(re.findall('[0-9\.]+', n)) == 0):
 
             if (n == 'Lesson') or (n in new_name) or (len(re.findall('[0-9\.]+', n)) == 0 and len(n)<=2) :
                 continue
             new_name += [n]
-        
-           
+
+
 
     return ' '.join(new_name)
 
@@ -89,7 +89,7 @@ def get_snippet(slide_name, related_slide_name):
     related_slide_name = related_slide_name.replace('----', '##')[:-4]
     slide_name = slide_name.replace('----', '##')[:-4]
     idx1 = slide_names.index(slide_name)
-    idx2 = slide_names.index(related_slide_name)    
+    idx2 = slide_names.index(related_slide_name)
     title_tfidf1 = title_tfidfs[idx1,:]
     title_tfidf2 = title_tfidfs[idx2,:]
     tfidf1 = tfidfs[idx1,:]
@@ -105,7 +105,7 @@ def get_snippet(slide_name, related_slide_name):
     #matching_words = map(lambda l : l[0], matching_words)
     if len(matching_words) == 0 :
         no_keywords = True
-    keywords = ', '.join(matching_words) 
+    keywords = ', '.join(matching_words)
     snippet_sentence =  get_snippet_sentences(related_slide_name, matching_words)
 
     return (('Slide title : ' + title_mapping[related_slide_name][:-1] +'\n' + 'Matching keywords: ' + keywords + '\n' + 'Snippet:' + snippet_sentence),no_keywords)
@@ -120,9 +120,9 @@ def get_snippet(slide_name, related_slide_name):
 def get_course_names():
     course_names = sorted(os.listdir(slides_path))
     cn_cpy = list(course_names)
-    for cn in cn_cpy:
-        if cn!='cs-410':
-            course_names.remove(cn)
+    # for cn in cn_cpy:
+    #     if cn!='cs-410':
+    #         course_names.remove(cn)
     num_course = len(course_names)
     return course_names,num_course
 
@@ -149,10 +149,10 @@ def load_related_slides():
             if os.path.exists(os.path.join(slides_path,course_name,lec_name,pdf_name)):
                 related_dict[key].append(pdf_name)
 
-def sort_slide_names(l): 
-    """ Sort the given iterable in the way that humans expect.""" 
-    convert = lambda text: int(text) if text.isdigit() else text 
-    alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key) ] 
+def sort_slide_names(l):
+    """ Sort the given iterable in the way that humans expect."""
+    convert = lambda text: int(text) if text.isdigit() else text
+    alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key) ]
     return sorted(l, key = alphanum_key)
 
 def get_slide(course_name,slide,lno):
@@ -166,8 +166,8 @@ def get_slide(course_name,slide,lno):
 def get_disp_str(slide_name):
     slide_no = slide_name.split('----')[-1][:-4].title()
     comp = slide_name.split('----')
-    slide_name = ' '.join(comp[-2].replace('.txt','').replace('_','-').split('-')).title() 
-    return ' '.join(comp[0].replace('_','-').split('-')).title() + ' : ' + trim_name(slide_name) + ', ' +slide_no 
+    slide_name = ' '.join(comp[-2].replace('.txt','').replace('_','-').split('-')).title()
+    return ' '.join(comp[0].replace('_','-').split('-')).title() + ' : ' + trim_name(slide_name) + ', ' +slide_no
 
 
 def get_next_slide(course_name,lno,curr_slide=None):
@@ -189,7 +189,7 @@ def get_next_slide(course_name,lno,curr_slide=None):
     ses_disp_str = get_disp_str(next_slide)
 
     related_slides_info = get_related_slides(next_slide)
-    return next_slide, lno,lectures[lno],related_slides_info,lectures,range(len(lectures)),ses_disp_str    
+    return next_slide, lno,lectures[lno],related_slides_info,lectures,range(len(lectures)),ses_disp_str
 
 def get_prev_slide(course_name,lno,curr_slide):
     lectures = sort_slide_names(os.listdir(os.path.join(slides_path, course_name)))
@@ -207,7 +207,7 @@ def get_prev_slide(course_name,lno,curr_slide):
     ses_disp_str = get_disp_str(prev_slide)
 
     related_slides_info = get_related_slides(prev_slide)
-    return prev_slide, lno,lectures[lno],related_slides_info,lectures,range(len(lectures)),ses_disp_str   
+    return prev_slide, lno,lectures[lno],related_slides_info,lectures,range(len(lectures)),ses_disp_str
 
 
 def get_related_slides(slide_name):
@@ -228,7 +228,7 @@ def get_related_slides(slide_name):
         for r in related_slides:
             comp = r.split('----')
             #disp_strs.append(' '.join(comp[0].replace('_','-').split('-')).title() + ' : ' + ' '.join(comp[-2].replace('.txt','').replace('_','-').split('-')).title() + ' , ' + ' '.join(comp[-1].replace('.pdf','').split('-')).title())
-            related_slide_name = ' '.join(comp[-2].replace('.txt','').replace('_','-').split('-')).title() 
+            related_slide_name = ' '.join(comp[-2].replace('.txt','').replace('_','-').split('-')).title()
             slide_course_name = ' '.join(slide_comp[0].replace('_','-').split('-')).title()
             related_slide_course_name = ' '.join(comp[0].replace('_','-').split('-')).title()
             trimmed_name = ' '.join(comp[0].replace('_','-').split('-')).title() + ' : ' + trim_name(related_slide_name)
@@ -255,7 +255,7 @@ def get_related_slides(slide_name):
     return len(disp_strs),filtered_related_slides,disp_strs,course_names,lnos,lec_names,disp_colors,disp_snippets
 
 def format_string(matchobj):
-    
+
     return '<span style="background-color: #bddcf5">'+matchobj.group(0)+'</span>'
 
 def get_search_results(search):
@@ -269,7 +269,7 @@ def get_search_results(search):
     # print(res)
     for d in res['hits']['hits']:
         top_docs.append(d[u'_source'][u'label'])
-    
+
     results = []
     disp_strs = []
     course_names = []
@@ -280,7 +280,7 @@ def get_search_results(search):
     for r in top_docs:
 
             comp = r.split('##')
-            
+
             lectures = sort_slide_names(os.listdir(os.path.join(slides_path, comp[0])))
             lname = '----'.join(comp[1:-1])
             try:
@@ -292,10 +292,10 @@ def get_search_results(search):
                 disp_strs.append(' '.join(comp[0].replace('_','-').split('-')).title() + ' : ' + trim_name(' '.join(comp[-2].replace('.txt','').replace('_','-').split('-')).title() )+ ', ' + ' '.join(comp[-1].replace('.pdf','').split('-')).title())
                 course_names.append(comp[0])
                 lec_names.append(lname)
-            
+
                 results.append(r)
                 snippets.append(get_snippet_sentences(r, search))
-        
+
     for x in range(len(results)):
         results[x] = results[x].replace('##', '----') + '.pdf'
     return len(results),results,disp_strs,course_names,lnos, snippets,lec_names
@@ -319,7 +319,3 @@ def get_explanation(search_string,top_k=1):
         if cnt>0:
             formatted_exp = sub_str
     return formatted_exp,'#'.join(file_names)
-
-
-
-
