@@ -1,6 +1,8 @@
-IN ORDER TO RUN OUR CODE:
+Video Link: https://www.youtube.com/watch?v=bV4k16nsyQY&feature=youtu.be
 
-Please git clone this repository to whichever directory you'd like. 
+How to run our code:
+
+Please git clone this repository to whichever directory you'd like.
 
 You should have ElasticSearch installed and running -- https://www.elastic.co/guide/en/elasticsearch/reference/current/targz.html
 
